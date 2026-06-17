@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutGrid, ShoppingBag, Heart, Package, Bell, Settings,
   LogOut, Image, Calendar, Users, BarChart2, User,
@@ -10,6 +10,7 @@ import { Logo } from "./logo";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
 
 type Role = "user" | "vendor" | "admin";
 
@@ -43,6 +44,19 @@ const ROLE_LABEL: Record<Role, string> = {
   admin: "Admin Console",
 };
 
+const ROLE_TABS: Record<Role, { r: Role; label: string; href: string }[]> = {
+  admin: [
+    { r: "user", label: "User", href: "/dashboard" },
+    { r: "vendor", label: "Vendor", href: "/studio" },
+    { r: "admin", label: "Admin", href: "/admin" },
+  ],
+  vendor: [
+    { r: "user", label: "Account", href: "/dashboard" },
+    { r: "vendor", label: "Studio", href: "/studio" },
+  ],
+  user: [],
+};
+
 interface DashboardLayoutProps {
   role: Role;
   children: React.ReactNode;
@@ -50,9 +64,18 @@ interface DashboardLayoutProps {
   userName?: string;
 }
 
-export function DashboardLayout({ role, children, title, userName = "Ada Obi" }: DashboardLayoutProps) {
+export function DashboardLayout({ role, children, title, userName = "" }: DashboardLayoutProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const menu = MENUS[role];
+  const tabs = ROLE_TABS[role];
+
+  const handleSignOut = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  };
 
   return (
     <div className="flex h-screen overflow-hidden bg-ink-100">
@@ -95,12 +118,12 @@ export function DashboardLayout({ role, children, title, userName = "Ada Obi" }:
           >
             <Settings size={18} />Settings
           </Link>
-          <Link
-            href="/"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold text-ink-600 hover:bg-ink-100 hover:text-ink transition-colors duration-200 font-sans"
+          <button
+            onClick={handleSignOut}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold text-ink-600 hover:bg-ink-100 hover:text-ink transition-colors duration-200 font-sans"
           >
             <LogOut size={18} />Sign Out
-          </Link>
+          </button>
         </div>
       </aside>
 
@@ -112,29 +135,22 @@ export function DashboardLayout({ role, children, title, userName = "Ada Obi" }:
             {title ?? ROLE_LABEL[role]}
           </h1>
           <div className="flex items-center gap-6">
-            {/* Role switcher */}
-            <nav className="flex items-center gap-5">
-              {(
-                [
-                  { r: "user", label: "User", href: "/dashboard" },
-                  { r: "vendor", label: "Vendor", href: "/studio" },
-                  { r: "admin", label: "Admin", href: "/admin" },
-                ] as const
-              ).map(({ r, label, href }) => (
-                <Link
-                  key={r}
-                  href={href}
-                  className={cn(
-                    "text-sm font-semibold font-sans transition-colors",
-                    role === r
-                      ? "text-brand"
-                      : "text-ink-400 hover:text-ink"
-                  )}
-                >
-                  {label}
-                </Link>
-              ))}
-            </nav>
+            {tabs.length > 0 && (
+              <nav className="flex items-center gap-5">
+                {tabs.map(({ r, label, href }) => (
+                  <Link
+                    key={r}
+                    href={href}
+                    className={cn(
+                      "text-sm font-semibold font-sans transition-colors",
+                      role === r ? "text-brand" : "text-ink-400 hover:text-ink"
+                    )}
+                  >
+                    {label}
+                  </Link>
+                ))}
+              </nav>
+            )}
             <button className="relative text-ink-600 hover:text-ink transition-colors">
               <Bell size={21} />
               <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-gold" />
