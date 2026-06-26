@@ -16,7 +16,7 @@ export default async function UserLayout({ children }: { children: React.ReactNo
     .eq("id", user.id)
     .single();
 
-  if (profile?.role === "admin") redirect("/admin");
+  if (profile?.role === "admin") redirect("https://ojudooba.symbodied.com/login");
 
   const role = (profile?.role === "vendor" ? "vendor" : "user") as "user" | "vendor";
   const firstName: string = profile?.first_name ?? (user.user_metadata?.first_name as string) ?? "";
