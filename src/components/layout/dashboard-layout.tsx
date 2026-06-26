@@ -3,72 +3,62 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  LayoutGrid, ShoppingBag, Heart, Package, Bell, Settings,
-  LogOut, Image, Calendar, Users, BarChart2, User,
+  LayoutGrid, FileText, Users, BookOpen, Package,
+  Settings, LogOut, Bell, Heart,
 } from "lucide-react";
 import { Logo } from "./logo";
 import { Avatar } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 
-type Role = "user" | "vendor" | "admin";
+type Role = "user" | "vendor";
 
-const MENUS: Record<Role, { key: string; label: string; href: string; icon: React.ReactNode }[]> = {
+const MAIN_MENU: Record<Role, { key: string; label: string; href: string; icon: React.ReactNode }[]> = {
   user: [
-    { key: "overview", label: "Overview", href: "/dashboard", icon: <LayoutGrid size={18} /> },
-    { key: "orders", label: "My Orders", href: "/dashboard/orders", icon: <ShoppingBag size={18} /> },
-    { key: "donations", label: "My Donations", href: "/dashboard/donations", icon: <Heart size={18} /> },
-    { key: "saved", label: "Saved Items", href: "/dashboard/saved", icon: <Package size={18} /> },
-    { key: "profile", label: "Profile", href: "/dashboard/profile", icon: <User size={18} /> },
+    { key: "dashboard", label: "Dashboard", href: "/dashboard", icon: <LayoutGrid size={18} /> },
+    { key: "communities", label: "Communities", href: "/dashboard/communities", icon: <Users size={18} /> },
+    { key: "blog-posts", label: "Blog posts", href: "/dashboard/blog-posts", icon: <FileText size={18} /> },
+    { key: "resources", label: "Resources", href: "/dashboard/resources", icon: <BookOpen size={18} /> },
+    { key: "saved", label: "Saved", href: "/dashboard/saved", icon: <Heart size={18} /> },
   ],
   vendor: [
-    { key: "overview", label: "Overview", href: "/studio", icon: <LayoutGrid size={18} /> },
+    { key: "dashboard", label: "Dashboard", href: "/dashboard", icon: <LayoutGrid size={18} /> },
+    { key: "communities", label: "Communities", href: "/dashboard/communities", icon: <Users size={18} /> },
+    { key: "blog-posts", label: "Blog posts", href: "/dashboard/blog-posts", icon: <FileText size={18} /> },
+    { key: "resources", label: "Resources", href: "/dashboard/resources", icon: <BookOpen size={18} /> },
     { key: "products", label: "Products", href: "/studio/products", icon: <Package size={18} /> },
-    { key: "blogs", label: "Blogs", href: "/studio/blogs", icon: <Image size={18} /> },
-    { key: "events", label: "Events", href: "/studio/events", icon: <Calendar size={18} /> },
-    { key: "orders", label: "Orders", href: "/studio/orders", icon: <ShoppingBag size={18} /> },
-  ],
-  admin: [
-    { key: "overview", label: "Dashboard", href: "/admin", icon: <LayoutGrid size={18} /> },
-    { key: "users", label: "Users", href: "/admin/users", icon: <Users size={18} /> },
-    { key: "approvals", label: "Approvals", href: "/admin/approvals", icon: <Image size={18} /> },
-    { key: "orders", label: "Orders", href: "/admin/orders", icon: <ShoppingBag size={18} /> },
-    { key: "analytics", label: "Analytics", href: "/admin/analytics", icon: <BarChart2 size={18} /> },
   ],
 };
 
-const ROLE_LABEL: Record<Role, string> = {
-  user: "Member",
-  vendor: "Vendor Studio",
-  admin: "Admin Console",
-};
-
-const ROLE_TABS: Record<Role, { r: Role; label: string; href: string }[]> = {
-  admin: [
-    { r: "user", label: "User", href: "/dashboard" },
-    { r: "vendor", label: "Vendor", href: "/studio" },
-    { r: "admin", label: "Admin", href: "/admin" },
-  ],
-  vendor: [
-    { r: "user", label: "Account", href: "/dashboard" },
-    { r: "vendor", label: "Studio", href: "/studio" },
-  ],
-  user: [],
+const PAGE_TITLES: Record<string, { title?: string; subtitle?: string }> = {
+  "/dashboard/communities": { title: "Community", subtitle: "Connect and collaborate with community members" },
+  "/dashboard/blog-posts": { title: "Blog Post", subtitle: "Share your stories and articles" },
+  "/dashboard/blog-posts/create": { title: "Create New Post", subtitle: "Share resources, stories, and indigenous knowledge" },
+  "/dashboard/resources": { title: "Resources", subtitle: "Access educational materials and research" },
+  "/dashboard/saved": { title: "Saved Items", subtitle: "Products you've saved for later" },
+  "/dashboard/settings": { title: "Settings", subtitle: "Manage your account and preferences" },
+  "/studio": { title: "Vendor Studio", subtitle: "Manage your content and products" },
+  "/studio/products": { title: "Products", subtitle: "Manage your products" },
+  "/studio/blogs": { title: "Blog Posts", subtitle: "Manage your blog posts" },
+  "/studio/events": { title: "Events", subtitle: "Manage your events" },
+  "/studio/orders": { title: "Orders", subtitle: "View your orders" },
 };
 
 interface DashboardLayoutProps {
   role: Role;
   children: React.ReactNode;
-  title?: string;
   userName?: string;
 }
 
-export function DashboardLayout({ role, children, title, userName = "" }: DashboardLayoutProps) {
+export function DashboardLayout({ role, children, userName = "" }: DashboardLayoutProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const menu = MENUS[role];
-  const tabs = ROLE_TABS[role];
+  const menu = MAIN_MENU[role];
+
+  const firstName = userName.split(" ")[0] || userName;
+  const meta = pathname === "/dashboard"
+    ? { title: `Welcome ${firstName}`, subtitle: "Here's what is happening with Symbodied" }
+    : (PAGE_TITLES[pathname] ?? { title: "Dashboard", subtitle: "" });
 
   const handleSignOut = async () => {
     const supabase = createClient();
@@ -77,31 +67,34 @@ export function DashboardLayout({ role, children, title, userName = "" }: Dashbo
     router.refresh();
   };
 
+  const isActive = (href: string, key: string) => {
+    if (key === "dashboard") return pathname === href;
+    return pathname === href || pathname.startsWith(href + "/");
+  };
+
   return (
-    <div className="flex h-screen overflow-hidden bg-ink-100">
+    <div className="flex flex-col h-screen overflow-hidden bg-[#F7F7F7]">
+      {/* Row: sidebar + main content */}
+      <div className="flex flex-1 overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-60 shrink-0 bg-white border-r border-ink-200 flex flex-col">
-        <div className="h-18 flex items-center px-5 border-b border-ink-200">
+      <aside className="w-52 shrink-0 bg-white border-r border-ink-200 flex flex-col">
+        <div className="h-16 flex items-center px-5 border-b border-ink-200">
           <Link href="/">
             <Logo height={26} />
           </Link>
         </div>
-        <div className="px-4 py-3 border-b border-ink-200">
-          <Badge tone={role === "admin" ? "gold" : "brand"} size="sm">
-            {ROLE_LABEL[role]}
-          </Badge>
-        </div>
-        <nav className="flex-1 p-3 flex flex-col gap-1 overflow-y-auto">
+
+        <nav className="flex-1 px-3 py-4 flex flex-col gap-0.5 overflow-y-auto">
           {menu.map((item) => {
-            const active = pathname === item.href || (pathname.startsWith(item.href + "/") && item.key !== "overview");
+            const active = isActive(item.href, item.key);
             return (
               <Link
                 key={item.key}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold font-sans transition-colors duration-200",
+                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold font-sans transition-colors duration-150",
                   active
-                    ? "bg-brand-light text-brand"
+                    ? "bg-brand text-white"
                     : "text-ink-600 hover:bg-ink-100 hover:text-ink"
                 )}
               >
@@ -111,18 +104,29 @@ export function DashboardLayout({ role, children, title, userName = "" }: Dashbo
             );
           })}
         </nav>
-        <div className="p-3 border-t border-ink-200">
+
+        <div className="px-3 pb-4 border-t border-ink-200 pt-3">
+          <p className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-ink-400 font-sans">
+            Account
+          </p>
           <Link
-            href="#"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold text-ink-600 hover:bg-ink-100 hover:text-ink transition-colors duration-200 font-sans"
+            href="/dashboard/settings"
+            className={cn(
+              "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold font-sans transition-colors duration-150",
+              pathname === "/dashboard/settings"
+                ? "bg-brand text-white"
+                : "text-ink-600 hover:bg-ink-100 hover:text-ink"
+            )}
           >
-            <Settings size={18} />Settings
+            <Settings size={18} />
+            Settings
           </Link>
           <button
             onClick={handleSignOut}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold text-ink-600 hover:bg-ink-100 hover:text-ink transition-colors duration-200 font-sans"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold text-ink-600 hover:bg-ink-100 hover:text-ink transition-colors duration-150 font-sans"
           >
-            <LogOut size={18} />Sign Out
+            <LogOut size={18} />
+            Logout
           </button>
         </div>
       </aside>
@@ -130,29 +134,18 @@ export function DashboardLayout({ role, children, title, userName = "" }: Dashbo
       {/* Main */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Topbar */}
-        <header className="h-18 bg-white border-b border-ink-200 flex items-center justify-between px-7 shrink-0">
-          <h1 className="font-display font-bold text-2xl text-ink">
-            {title ?? ROLE_LABEL[role]}
-          </h1>
-          <div className="flex items-center gap-6">
-            {tabs.length > 0 && (
-              <nav className="flex items-center gap-5">
-                {tabs.map(({ r, label, href }) => (
-                  <Link
-                    key={r}
-                    href={href}
-                    className={cn(
-                      "text-sm font-semibold font-sans transition-colors",
-                      role === r ? "text-brand" : "text-ink-400 hover:text-ink"
-                    )}
-                  >
-                    {label}
-                  </Link>
-                ))}
-              </nav>
+        <header className="h-20 bg-white border-b border-ink-200 flex items-center justify-between px-7 shrink-0">
+          <div>
+            <h1 className="font-display font-bold text-2xl text-ink leading-tight">
+              {meta.title}
+            </h1>
+            {meta.subtitle && (
+              <p className="text-sm text-ink-500 font-sans leading-tight">{meta.subtitle}</p>
             )}
+          </div>
+          <div className="flex items-center gap-4">
             <button className="relative text-ink-600 hover:text-ink transition-colors">
-              <Bell size={21} />
+              <Bell size={20} />
               <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-gold" />
             </button>
             <Avatar name={userName} size="sm" />
@@ -164,6 +157,12 @@ export function DashboardLayout({ role, children, title, userName = "" }: Dashbo
           {children}
         </main>
       </div>
+      </div>
+
+      {/* Footer — full width across sidebar + content */}
+      <footer className="shrink-0 bg-brand-deep py-3 text-center">
+        <span className="text-xs text-white/70 font-sans">© Copyright 2025 Symbodied</span>
+      </footer>
     </div>
   );
 }

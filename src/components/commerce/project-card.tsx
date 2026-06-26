@@ -41,8 +41,8 @@ export function ProjectCard({ name, category, summary, raised, target, creator, 
         )}
       </div>
       <div className="p-5 flex flex-col gap-3">
-        <Badge tone="brand" size="sm">{category}</Badge>
-        <h3 className={`font-sans font-bold text-base leading-snug line-clamp-2 ${dark ? "text-white" : "text-ink"}`}>{name}</h3>
+        <Badge tone="brand" size="sm" className="self-start">{category}</Badge>
+        <h3 className={`font-sans font-bold text-base leading-snug line-clamp-1 ${dark ? "text-white" : "text-ink"}`}>{name}</h3>
         <p className={`text-sm leading-relaxed line-clamp-2 ${dark ? "text-white/70" : "text-ink-600"}`}>{summary}</p>
         <div className="flex flex-col gap-1.5">
           <div className={`flex justify-between text-xs font-sans ${dark ? "text-white/60" : "text-ink-500"}`}>

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -30,7 +31,9 @@ export default async function StudioEventsPage() {
     <div className="p-7 flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <h2 className="font-sans font-bold text-xl text-ink">My Events</h2>
-        <Button variant="primary" size="sm" leadingIcon={<Plus size={15} />}>Create Event</Button>
+        <Link href="/studio/events/create">
+          <Button variant="primary" size="sm" leadingIcon={<Plus size={15} />}>Create Event</Button>
+        </Link>
       </div>
       <Card padding="none" className="overflow-hidden">
         <div className="overflow-x-auto">

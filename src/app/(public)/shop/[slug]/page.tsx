@@ -19,6 +19,15 @@ import { use } from "react";
 
 const TABS = ["Overview", "Description", "Details", "Reviews"];
 
+function vendorSlug(name: string) {
+  return name
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
 export default function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
   const addItem = useCart((s) => s.addItem);
@@ -86,7 +95,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
 
           {/* Product info */}
           <div className="flex flex-col gap-5">
-            <Badge tone="brand">{product.category}</Badge>
+            <Badge tone="brand" className="self-start">{product.category}</Badge>
             <h1 className="font-display font-bold text-3xl text-ink leading-tight tracking-tight">
               {product.name}
             </h1>
@@ -144,7 +153,9 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                 <div className="font-semibold text-ink font-sans">{product.vendor}</div>
                 <div className="text-xs text-ink-500 font-sans">Verified vendor · {product.location}</div>
               </div>
-              <Button variant="ghost" size="sm" trailingIcon={<ChevronRight size={15} />}>View Vendor</Button>
+              <Link href={`/vendors/${vendorSlug(product.vendor)}`}>
+                <Button variant="ghost" size="sm" trailingIcon={<ChevronRight size={15} />}>View Vendor</Button>
+              </Link>
             </Card>
           </div>
         </div>
@@ -178,9 +189,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
           <SectionHeader overline="You might also like" title="Related Products" className="mb-7" />
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {related.map((p) => (
-              <Link key={p.id} href={`/shop/${p.slug}`}>
-                <ProductCard {...p} />
-              </Link>
+              <ProductCard key={p.id} {...p} />
             ))}
           </div>
         </div>

@@ -32,8 +32,8 @@ export function BlogCard({ title, category, excerpt, author, date, readTime, see
         )}
       </div>
       <div className="p-5 flex flex-col gap-3">
-        <Badge tone="brand" size="sm">{category}</Badge>
-        <h3 className="font-sans font-bold text-base text-ink leading-snug line-clamp-2 group-hover:text-brand transition-colors duration-200">
+        <Badge tone="brand" size="sm" className="self-start">{category}</Badge>
+        <h3 className="font-sans font-bold text-base text-ink leading-snug line-clamp-1 group-hover:text-brand transition-colors duration-200">
           {title}
         </h3>
         <p className="text-sm text-ink-600 font-sans leading-relaxed line-clamp-3">{excerpt}</p>

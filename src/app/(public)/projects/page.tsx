@@ -1,24 +1,46 @@
-"use client";
-
-import { useState } from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ProjectCard } from "@/components/commerce/project-card";
-import { projects } from "@/lib/data";
+import { createClient } from "@/lib/supabase/server";
+import { ProjectsClient } from "@/components/commerce/projects-client";
+import { projects as STATIC } from "@/lib/data";
 
-const ALL_PROJECTS = [
-  ...projects,
-  { id: "pr4", category: "Medicine", name: "Dibia Documentation Archive", summary: "Recording and digitising over 500 years of Igbo herbal medicine practice.", raised: 800000, target: 3000000, creator: "Heritage Foundation", daysLeft: 45, seed: 2, image: undefined },
-  { id: "pr5", category: "Agriculture", name: "Rainwater Harvesting — Kogi", summary: "Installing community cisterns across 12 farming villages to reduce water stress.", raised: 2100000, target: 4000000, creator: "GreenKogi NGO", daysLeft: 22, seed: 0, image: undefined },
-  { id: "pr6", category: "Technology", name: "Village Wi-Fi Mesh Network", summary: "Bringing community internet access to 8 underserved villages in Osun.", raised: 5500000, target: 8000000, creator: "TechForAll", daysLeft: 60, seed: 1, image: undefined },
-];
+export default async function ProjectsPage() {
+  const supabase = await createClient();
 
-const CATS = ["All", "Agriculture", "Medicine", "Technology", "Textile"];
+  const [
+    { data: rawProjects },
+    { data: { user } },
+  ] = await Promise.all([
+    supabase
+      .from("projects")
+      .select("id, name, category, summary, target, raised, days_left, status")
+      .in("status", ["active", "completed"])
+      .order("created_at", { ascending: false }),
+    supabase.auth.getUser(),
+  ]);
 
-export default function ProjectsPage() {
-  const [active, setActive] = useState("All");
-  const filtered = ALL_PROJECTS.filter((p) => active === "All" || p.category === active);
+  type LiveProject = {
+    id: string; name: string; category: string; summary: string;
+    raised: number; target: number; daysLeft: number; creator: string;
+    seed: number; image?: string;
+  };
+
+  const liveProjects: LiveProject[] = (rawProjects ?? []).map((p, i) => ({
+    id: p.id as string,
+    name: p.name as string,
+    category: p.category as string,
+    summary: (p.summary as string) ?? "",
+    raised: Number(p.raised ?? 0),
+    target: Number(p.target),
+    daysLeft: (p.days_left as number) ?? 30,
+    creator: "Community",
+    seed: i % 6,
+  }));
+
+  const projects = liveProjects.length > 0
+    ? liveProjects
+    : [...STATIC, { id: "pr4", category: "Medicine", name: "Dibia Documentation Archive", summary: "Recording and digitising over 500 years of Igbo herbal medicine practice.", raised: 800000, target: 3000000, daysLeft: 45, creator: "Heritage Foundation", seed: 2 }];
 
   return (
     <div>
@@ -29,33 +51,21 @@ export default function ProjectsPage() {
           <p className="mt-2 text-ink-600 font-sans text-base max-w-lg">
             Back initiatives that turn tradition into livelihoods. Every naira supports real communities.
           </p>
-          <div className="mt-6 flex flex-wrap gap-2">
-            {CATS.map((c) => (
-              <button
-                key={c}
-                onClick={() => setActive(c)}
-                className={`px-4 py-1.5 rounded-full text-sm font-semibold font-sans transition-colors duration-200 border ${active === c ? "bg-brand text-white border-brand" : "bg-white text-ink-600 border-ink-200 hover:border-brand hover:text-brand"}`}
-              >
-                {c}
-              </button>
-            ))}
-          </div>
         </div>
       </section>
 
-      <section className="py-14 bg-white">
-        <div className="max-w-[var(--container-max)] mx-auto px-6">
-          <p className="text-sm text-ink-500 font-sans mb-6"><strong className="text-ink">{filtered.length}</strong> active projects</p>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map((p) => <ProjectCard key={p.id} {...p} />)}
-          </div>
-        </div>
-      </section>
+      <ProjectsClient
+        projects={projects}
+        isAuthenticated={!!user}
+        isLive={liveProjects.length > 0}
+      />
 
       <section className="py-16 bg-brand">
         <div className="max-w-[var(--container-max)] mx-auto px-6 text-center">
           <h2 className="font-display font-bold text-3xl text-white mb-3">Have a project to fund?</h2>
-          <p className="text-white/80 font-sans mb-7 max-w-md mx-auto">Verified vendors and community organisations can submit projects for crowdfunding on Symbodied.</p>
+          <p className="text-white/80 font-sans mb-7 max-w-md mx-auto">
+            Verified vendors and community organisations can submit projects for crowdfunding on Symbodied.
+          </p>
           <Link href="/signup"><Button variant="gold" size="lg">Start a Project</Button></Link>
         </div>
       </section>

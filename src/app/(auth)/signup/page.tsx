@@ -38,35 +38,18 @@ export default function SignupPage() {
       email,
       password,
       options: {
-        data: { first_name: firstName, last_name: lastName, role },
+        data: { first_name: firstName, last_name: lastName, role, username },
       },
     });
 
     if (error) {
       setLoading(false);
-      toast.error(error.message);
-      return;
-    }
-
-    if (authData.user) {
-      const { error: profileError } = await supabase.from("profiles").insert({
-        id: authData.user.id,
-        first_name: firstName,
-        last_name: lastName,
-        email,
-        username,
-        role,
-      });
-
-      if (profileError) {
-        setLoading(false);
-        if (profileError.code === "23505") {
-          toast.error("Username is already taken. Please choose another.");
-        } else {
-          toast.error(profileError.message);
-        }
-        return;
+      if (error.message.includes("rate_limit") || error.status === 429) {
+        toast.error("Too many requests. Please wait a moment before trying again.");
+      } else {
+        toast.error(error.message);
       }
+      return;
     }
 
     setLoading(false);

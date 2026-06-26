@@ -11,10 +11,15 @@ export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 1200));
+    const email = (new FormData(e.currentTarget).get("email") as string) ?? "";
+    const { createClient } = await import("@/lib/supabase/client");
+    const supabase = createClient();
+    await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/reset-password`,
+    });
     setLoading(false);
     setSent(true);
     toast.success("Reset link sent! Check your inbox.");
@@ -47,7 +52,7 @@ export default function ForgotPasswordPage() {
         <p className="mt-2 text-ink-600 font-sans text-base">Enter your email and we'll send you a reset link.</p>
       </div>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <Input label="Email address" type="email" placeholder="you@example.com" required autoComplete="email" leadingIcon={<Mail size={16} />} />
+        <Input name="email" label="Email address" type="email" placeholder="you@example.com" required autoComplete="email" leadingIcon={<Mail size={16} />} />
         <Button type="submit" variant="primary" size="lg" fullWidth loading={loading}>Send Reset Link</Button>
       </form>
     </div>

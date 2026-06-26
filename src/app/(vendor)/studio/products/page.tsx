@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Plus, Search, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,7 +53,9 @@ export default function StudioProductsPage() {
     <div className="p-7 flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <h2 className="font-sans font-bold text-xl text-ink">My Products</h2>
-        <Button variant="primary" size="sm" leadingIcon={<Plus size={15} />}>Add Product</Button>
+        <Link href="/studio/products/create">
+          <Button variant="primary" size="sm" leadingIcon={<Plus size={15} />}>Add Product</Button>
+        </Link>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

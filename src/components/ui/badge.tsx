@@ -29,7 +29,7 @@ export function Badge({ tone = "neutral", size = "md", leadingIcon, children, cl
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full border font-sans font-semibold",
+        "inline-flex items-center w-fit rounded-full border font-sans font-semibold",
         toneStyles[tone],
         sizeStyles[size],
         className

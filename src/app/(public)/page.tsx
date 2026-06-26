@@ -21,9 +21,9 @@ const PROGRAM_ICONS: Record<string, React.ReactNode> = {
 
 // Hero mosaic: 4 real community photos
 const HERO_MOSAIC = [
-  { src: "/images/hero/community1.jpg", label: "Harvest" },
-  { src: "/images/hero/community2.jpg", label: "Textile" },
-  { src: "/images/hero/community3.jpg", label: "Community" },
+  { src: "/images/hero/community5.jpg", label: "Harvest" },
+  { src: "/images/hero/community6.jpg", label: "Textile" },
+  { src: "/images/hero/community7.jpg", label: "Community" },
   { src: "/images/hero/community4.jpg", label: "Market" },
 ];
 
@@ -57,8 +57,8 @@ export default function HomePage() {
             </div>
 
             {/* Hero image mosaic — real community photos */}
-            <div className="hidden md:grid grid-cols-2 gap-3.5" style={{ gridTemplateRows: "160px 160px 160px" }}>
-              <div className="row-span-2 rounded-xl overflow-hidden relative">
+            <div className="hidden md:grid grid-cols-2 gap-3.5" style={{ gridTemplateRows: "168px 159px 159px" }}>
+              <div className="row-span-2 rounded-xl overflow-hidden relative mx-2" style={{ alignSelf: "start", height: "300px" }}>
                 <Image src={HERO_MOSAIC[0].src} alt={HERO_MOSAIC[0].label} fill className="object-cover" sizes="20vw" />
               </div>
               <div className="rounded-xl overflow-hidden relative">
@@ -107,7 +107,7 @@ export default function HomePage() {
           </div>
           <div className="relative h-[420px] rounded-xl overflow-hidden">
             <Image
-              src="/images/static/mission_.jpg"
+              src="/images/static/newMission.jpg"
               alt="Community gathering"
               fill
               className="object-cover"
@@ -247,12 +247,12 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-        <div className="relative min-h-[420px]">
+        <div className="relative min-h-[420px] bg-white">
           <Image
             src="/images/static/international_security.png"
             alt="International solidarity"
             fill
-            className="object-cover"
+            className="object-contain"
             sizes="50vw"
           />
         </div>

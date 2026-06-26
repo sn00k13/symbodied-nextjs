@@ -13,3 +13,12 @@ export function pct(raised: number, target: number) {
   if (!target) return 0;
   return Math.min(100, Math.round((raised / target) * 100));
 }
+
+export function formatDate(iso: string | null | undefined, opts?: Intl.DateTimeFormatOptions) {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleDateString("en-GB", opts ?? {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}

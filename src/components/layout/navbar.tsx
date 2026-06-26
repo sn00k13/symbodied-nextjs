@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, ShoppingCart, ChevronDown, Menu, X } from "lucide-react";
+import { Search, ShoppingCart, Menu, X } from "lucide-react";
 import { Logo } from "./logo";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/store/cart";
@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 const NAV = [
   { label: "Home", href: "/" },
   { label: "Shop", href: "/shop" },
-  { label: "Programs", href: "/programs", hasDropdown: true },
+  { label: "Programs", href: "/programs" },
   { label: "Blog", href: "/blog" },
   { label: "Projects", href: "/projects" },
   { label: "Events", href: "/events" },
@@ -45,7 +45,6 @@ export function Navbar() {
                   )}
                 >
                   {item.label}
-                  {item.hasDropdown && <ChevronDown size={14} />}
                 </Link>
               );
             })}

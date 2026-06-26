@@ -1,21 +1,12 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { createServiceClient } from "@/lib/supabase/service";
-import { ProductCard } from "@/components/commerce/product-card";
-
-type SavedProduct = {
-  id: string; slug: string; name: string; category: string;
-  vendor: string; price: number; unit: string; location: string;
-  image?: string; seed?: number;
-};
+import { SavedGrid, type SavedProduct } from "./saved-grid";
 
 export default async function SavedPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const service = createServiceClient();
-  const { data: savedItems } = await service
+  const { data: savedItems } = await supabase
     .from("saved_items")
     .select("id, products(id, slug, name, category, price, unit, location, vendor, image)")
     .eq("user_id", user.id)
@@ -37,21 +28,7 @@ export default async function SavedPage() {
           <strong className="text-ink">{products.length}</strong> saved
         </span>
       </div>
-      {products.length === 0 ? (
-        <p className="text-sm text-ink-400 font-sans text-center py-12">
-          No saved items yet. Browse the{" "}
-          <Link href="/shop" className="text-brand hover:underline">shop</Link>{" "}
-          and save products you love.
-        </p>
-      ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {products.map((p) => (
-            <Link key={p.id} href={`/shop/${p.slug}`}>
-              <ProductCard {...p} />
-            </Link>
-          ))}
-        </div>
-      )}
+      <SavedGrid initialProducts={products} />
     </div>
   );
 }

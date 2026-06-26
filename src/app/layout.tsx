@@ -22,6 +22,7 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://symbodied.com"),
   title: {
     default: "Symbodied — Social Network Marketplace",
     template: "%s | Symbodied",
@@ -34,6 +35,14 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_NG",
     siteName: "Symbodied",
+    images: [
+      {
+        url: "/images/logo.png",
+        width: 499,
+        height: 500,
+        alt: "Symbodied Logo",
+      },
+    ],
   },
 };
 

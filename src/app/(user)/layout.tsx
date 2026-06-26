@@ -17,14 +17,14 @@ export default async function UserLayout({ children }: { children: React.ReactNo
     .single();
 
   if (profile?.role === "admin") redirect("/admin");
-  if (profile?.role === "vendor") redirect("/studio");
 
+  const role = (profile?.role === "vendor" ? "vendor" : "user") as "user" | "vendor";
   const firstName: string = profile?.first_name ?? (user.user_metadata?.first_name as string) ?? "";
   const lastName: string = profile?.last_name ?? (user.user_metadata?.last_name as string) ?? "";
-  const userName = `${firstName} ${lastName}`.trim() || (user.email ?? "User");
+  const userName = `${firstName} ${lastName}`.trim() || (user.email ?? "Member");
 
   return (
-    <DashboardLayout role="user" userName={userName}>
+    <DashboardLayout role={role} userName={userName}>
       {children}
     </DashboardLayout>
   );

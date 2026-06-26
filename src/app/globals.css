@@ -85,3 +85,48 @@ body {
 * {
   box-sizing: border-box;
 }
+
+/* Hide scrollbar while keeping scroll behaviour */
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+
+/* Dual range slider */
+input[type="range"].range-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  pointer-events: none;
+  outline: none;
+}
+input[type="range"].range-thumb::-webkit-slider-runnable-track {
+  background: transparent;
+}
+input[type="range"].range-thumb::-moz-range-track {
+  background: transparent;
+}
+input[type="range"].range-thumb::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  pointer-events: all;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: #fff;
+  border: 2px solid var(--color-brand);
+  box-shadow: 0 1px 4px rgba(15, 26, 20, 0.15);
+  cursor: pointer;
+  transition: transform 100ms ease;
+}
+input[type="range"].range-thumb::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+input[type="range"].range-thumb::-moz-range-thumb {
+  pointer-events: all;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: #fff;
+  border: 2px solid var(--color-brand);
+  box-shadow: 0 1px 4px rgba(15, 26, 20, 0.15);
+  cursor: pointer;
+}

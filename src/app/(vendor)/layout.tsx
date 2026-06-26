@@ -24,7 +24,7 @@ export default async function VendorLayout({ children }: { children: React.React
   const userName = `${firstName} ${lastName}`.trim() || (user.email ?? "Vendor");
 
   return (
-    <DashboardLayout role="vendor" title="Vendor Studio" userName={userName}>
+    <DashboardLayout role="vendor" userName={userName}>
       {children}
     </DashboardLayout>
   );
