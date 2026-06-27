@@ -8,17 +8,37 @@ export default async function SavedPage() {
 
   const { data: savedItems } = await supabase
     .from("saved_items")
-    .select("id, products(id, slug, name, category, price, unit, location, vendor, image)")
+    .select("id, products(id, slug, name, category, price, unit, location, image_url, profiles(first_name, last_name))")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
+  type RawItem = {
+    products?: {
+      id: string; slug?: string | null; name: string; category: string;
+      price: number; unit: string; location: string | null; image_url?: string | null;
+      profiles?: { first_name?: string | null; last_name?: string | null } | { first_name?: string | null; last_name?: string | null }[] | null;
+    } | null;
+  };
+
   const products: SavedProduct[] = (savedItems ?? [])
-    .map((item) => {
-      const raw = item as unknown as { products?: SavedProduct | SavedProduct[] | null };
-      const p = Array.isArray(raw.products) ? raw.products[0] : raw.products;
-      return p ?? null;
-    })
-    .filter((p): p is SavedProduct => p !== null);
+    .flatMap((item) => {
+      const p = (item as unknown as RawItem).products;
+      if (!p) return [];
+      const prof = Array.isArray(p.profiles) ? p.profiles[0] : p.profiles;
+      const vendor = [prof?.first_name ?? "", prof?.last_name ?? ""].filter(Boolean).join(" ") || "Symbodied Vendor";
+      const mapped: SavedProduct = {
+        id: p.id,
+        name: p.name,
+        category: p.category,
+        vendor,
+        price: Number(p.price),
+        unit: p.unit,
+        location: p.location ?? "",
+        ...(p.slug ? { slug: p.slug } : {}),
+        ...(p.image_url ? { image: p.image_url } : {}),
+      };
+      return [mapped];
+    });
 
   return (
     <div className="p-7 flex flex-col gap-6">

@@ -27,22 +27,49 @@ export type ShopProduct = {
 const CATEGORIES = ["All", "Agriculture", "Textile", "Medicine", "Technology"];
 const LOCATIONS = ["Nigeria", "Ghana", "Kenya", "Diaspora"];
 const SORTS = ["Newest", "Price: Low → High", "Price: High → Low", "Most Popular"];
+
+// Derive country from location string. All locations currently follow "City, State" (Nigerian).
+// Extend this map as products from other countries are added.
+function getProductCountry(location: string): string {
+  const lower = location.toLowerCase();
+  if (lower.includes("ghana") || lower.includes("accra")) return "Ghana";
+  if (lower.includes("kenya") || lower.includes("nairobi")) return "Kenya";
+  if (
+    lower.includes("diaspora") ||
+    lower.includes("united kingdom") ||
+    lower.includes("united states") ||
+    lower.includes("london") ||
+    lower.includes("new york")
+  ) return "Diaspora";
+  return "Nigeria";
+}
 const PRICE_MIN_BOUND = 0;
 const PRICE_MAX_BOUND = 100000;
 
 interface ShopClientProps {
   products: ShopProduct[];
   initialFavorites?: string[];
+  isAuthenticated?: boolean;
 }
 
-export function ShopClient({ products, initialFavorites = [] }: ShopClientProps) {
+export function ShopClient({ products, initialFavorites = [], isAuthenticated = false }: ShopClientProps) {
   const addItem = useCart((s) => s.addItem);
   const [favorites, setFavorites] = useState<Set<string>>(() => new Set(initialFavorites));
   const [activeCategory, setActiveCategory] = useState("All");
+  const [activeLocations, setActiveLocations] = useState<Set<string>>(new Set());
   const [activeSort, setActiveSort] = useState("Newest");
   const [search, setSearch] = useState("");
   const [priceMin, setPriceMin] = useState(PRICE_MIN_BOUND);
   const [priceMax, setPriceMax] = useState(PRICE_MAX_BOUND);
+
+  function toggleLocation(loc: string) {
+    setActiveLocations((prev) => {
+      const next = new Set(prev);
+      if (next.has(loc)) next.delete(loc);
+      else next.add(loc);
+      return next;
+    });
+  }
 
   const minPct = (priceMin / PRICE_MAX_BOUND) * 100;
   const maxPct = (priceMax / PRICE_MAX_BOUND) * 100;
@@ -55,7 +82,9 @@ export function ShopClient({ products, initialFavorites = [] }: ShopClientProps)
         p.name.toLowerCase().includes(search.toLowerCase()) ||
         p.vendor.toLowerCase().includes(search.toLowerCase());
       const matchPrice = p.price >= priceMin && p.price <= priceMax;
-      return matchCat && matchSearch && matchPrice;
+      const matchLocation =
+        activeLocations.size === 0 || activeLocations.has(getProductCountry(p.location));
+      return matchCat && matchSearch && matchPrice && matchLocation;
     })
     .sort((a, b) => {
       if (activeSort === "Price: Low → High") return a.price - b.price;
@@ -64,17 +93,34 @@ export function ShopClient({ products, initialFavorites = [] }: ShopClientProps)
     });
 
   async function handleToggleFavorite(productId: string) {
+    if (!isAuthenticated) {
+      toast.error("Sign in to save products", { description: "Create a free account or log in to save products for later." });
+      return;
+    }
+    const isCurrentlyFavorited = favorites.has(productId);
     setFavorites((prev) => {
       const next = new Set(prev);
       if (next.has(productId)) next.delete(productId);
       else next.add(productId);
       return next;
     });
-    await toggleFavorite(productId);
+    const result = await toggleFavorite(productId);
+    if (result.favorited !== !isCurrentlyFavorited) {
+      setFavorites((prev) => {
+        const next = new Set(prev);
+        if (result.favorited) next.add(productId);
+        else next.delete(productId);
+        return next;
+      });
+    }
+    toast.success(result.favorited ? "Saved!" : "Removed from saved", {
+      description: result.favorited ? "Find it anytime in your dashboard." : undefined,
+    });
   }
 
   function clearFilters() {
     setActiveCategory("All");
+    setActiveLocations(new Set());
     setSearch("");
     setPriceMin(PRICE_MIN_BOUND);
     setPriceMax(PRICE_MAX_BOUND);
@@ -173,14 +219,31 @@ export function ShopClient({ products, initialFavorites = [] }: ShopClientProps)
             {/* Location */}
             <div className="pb-5 mb-5 border-b border-ink-200">
               <h4 className="text-xs font-bold text-ink-600 uppercase tracking-wide mb-3 font-sans">Location</h4>
-              {LOCATIONS.map((l, i) => (
-                <label key={l} className="flex items-center gap-3 py-1.5 cursor-pointer text-sm font-sans text-ink-600">
-                  <span className={`w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center ${i === 0 ? "bg-brand border-brand" : "border-ink-300"}`}>
-                    {i === 0 && <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>}
-                  </span>
-                  {l}
-                </label>
-              ))}
+              {LOCATIONS.map((l) => {
+                const checked = activeLocations.has(l);
+                const count = products.filter((p) => getProductCountry(p.location) === l).length;
+                return (
+                  <label
+                    key={l}
+                    onClick={() => toggleLocation(l)}
+                    className="flex items-center gap-3 py-1.5 cursor-pointer text-sm font-sans text-ink-600 hover:text-ink"
+                  >
+                    <span
+                      className={`w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center transition-colors ${
+                        checked ? "bg-brand border-brand" : "border-ink-300 bg-white"
+                      }`}
+                    >
+                      {checked && (
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M20 6 9 17l-5-5" />
+                        </svg>
+                      )}
+                    </span>
+                    <span className="flex-1">{l}</span>
+                    <span className="text-ink-400 text-xs">{count}</span>
+                  </label>
+                );
+              })}
             </div>
 
             <Button variant="secondary" size="sm" fullWidth onClick={clearFilters}>

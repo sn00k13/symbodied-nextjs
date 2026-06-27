@@ -32,6 +32,7 @@ export async function rsvpForEvent(eventId: string) {
   }
 
   revalidatePath("/events");
+  revalidatePath("/dashboard/events");
   return { success: true };
 }
 

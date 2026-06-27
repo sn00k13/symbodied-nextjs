@@ -4,10 +4,11 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutGrid, FileText, Users, BookOpen, Package,
-  Settings, LogOut, Bell, Heart,
+  Settings, LogOut, Bell, Heart, CalendarDays,
 } from "lucide-react";
 import { Logo } from "./logo";
 import { Avatar } from "@/components/ui/avatar";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 
@@ -19,6 +20,7 @@ const MAIN_MENU: Record<Role, { key: string; label: string; href: string; icon: 
     { key: "communities", label: "Communities", href: "/dashboard/communities", icon: <Users size={18} /> },
     { key: "blog-posts", label: "Blog posts", href: "/dashboard/blog-posts", icon: <FileText size={18} /> },
     { key: "resources", label: "Resources", href: "/dashboard/resources", icon: <BookOpen size={18} /> },
+    { key: "events", label: "Events", href: "/dashboard/events", icon: <CalendarDays size={18} /> },
     { key: "saved", label: "Saved", href: "/dashboard/saved", icon: <Heart size={18} /> },
   ],
   vendor: [
@@ -35,6 +37,7 @@ const PAGE_TITLES: Record<string, { title?: string; subtitle?: string }> = {
   "/dashboard/blog-posts": { title: "Blog Post", subtitle: "Share your stories and articles" },
   "/dashboard/blog-posts/create": { title: "Create New Post", subtitle: "Share resources, stories, and indigenous knowledge" },
   "/dashboard/resources": { title: "Resources", subtitle: "Access educational materials and research" },
+  "/dashboard/events": { title: "My Events", subtitle: "Events you've RSVPd to" },
   "/dashboard/saved": { title: "Saved Items", subtitle: "Products you've saved for later" },
   "/dashboard/settings": { title: "Settings", subtitle: "Manage your account and preferences" },
   "/studio": { title: "Vendor Studio", subtitle: "Manage your content and products" },
@@ -73,12 +76,12 @@ export function DashboardLayout({ role, children, userName = "" }: DashboardLayo
   };
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-[#F7F7F7]">
+    <div className="flex flex-col h-screen overflow-hidden bg-[#F7F7F7] dark:bg-[#0f1611]">
       {/* Row: sidebar + main content */}
       <div className="flex flex-1 overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-52 shrink-0 bg-white border-r border-ink-200 flex flex-col">
-        <div className="h-16 flex items-center px-5 border-b border-ink-200">
+      <aside className="w-52 shrink-0 bg-white dark:bg-[#162018] border-r border-ink-200 dark:border-[#263a2b] flex flex-col">
+        <div className="h-16 flex items-center px-5 border-b border-ink-200 dark:border-[#263a2b]">
           <Link href="/">
             <Logo height={26} />
           </Link>
@@ -95,7 +98,7 @@ export function DashboardLayout({ role, children, userName = "" }: DashboardLayo
                   "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold font-sans transition-colors duration-150",
                   active
                     ? "bg-brand text-white"
-                    : "text-ink-600 hover:bg-ink-100 hover:text-ink"
+                    : "text-ink-600 dark:text-[#89a895] hover:bg-ink-100 dark:hover:bg-[#1b2d20] hover:text-ink dark:hover:text-[#dceee3]"
                 )}
               >
                 {item.icon}
@@ -105,8 +108,8 @@ export function DashboardLayout({ role, children, userName = "" }: DashboardLayo
           })}
         </nav>
 
-        <div className="px-3 pb-4 border-t border-ink-200 pt-3">
-          <p className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-ink-400 font-sans">
+        <div className="px-3 pb-4 border-t border-ink-200 dark:border-[#263a2b] pt-3">
+          <p className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-ink-400 dark:text-[#4d6356] font-sans">
             Account
           </p>
           <Link
@@ -115,7 +118,7 @@ export function DashboardLayout({ role, children, userName = "" }: DashboardLayo
               "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold font-sans transition-colors duration-150",
               pathname === "/dashboard/settings"
                 ? "bg-brand text-white"
-                : "text-ink-600 hover:bg-ink-100 hover:text-ink"
+                : "text-ink-600 dark:text-[#89a895] hover:bg-ink-100 dark:hover:bg-[#1b2d20] hover:text-ink dark:hover:text-[#dceee3]"
             )}
           >
             <Settings size={18} />
@@ -123,7 +126,7 @@ export function DashboardLayout({ role, children, userName = "" }: DashboardLayo
           </Link>
           <button
             onClick={handleSignOut}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold text-ink-600 hover:bg-ink-100 hover:text-ink transition-colors duration-150 font-sans"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold text-ink-600 dark:text-[#89a895] hover:bg-ink-100 dark:hover:bg-[#1b2d20] hover:text-ink dark:hover:text-[#dceee3] transition-colors duration-150 font-sans"
           >
             <LogOut size={18} />
             Logout
@@ -134,17 +137,18 @@ export function DashboardLayout({ role, children, userName = "" }: DashboardLayo
       {/* Main */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Topbar */}
-        <header className="h-20 bg-white border-b border-ink-200 flex items-center justify-between px-7 shrink-0">
+        <header className="h-20 bg-white dark:bg-[#162018] border-b border-ink-200 dark:border-[#263a2b] flex items-center justify-between px-7 shrink-0">
           <div>
-            <h1 className="font-display font-bold text-2xl text-ink leading-tight">
+            <h1 className="font-display font-bold text-2xl text-ink dark:text-[#dceee3] leading-tight">
               {meta.title}
             </h1>
             {meta.subtitle && (
-              <p className="text-sm text-ink-500 font-sans leading-tight">{meta.subtitle}</p>
+              <p className="text-sm text-ink-500 dark:text-[#668074] font-sans leading-tight">{meta.subtitle}</p>
             )}
           </div>
           <div className="flex items-center gap-4">
-            <button className="relative text-ink-600 hover:text-ink transition-colors">
+            <ThemeToggle />
+            <button className="relative text-ink-600 dark:text-[#89a895] hover:text-ink dark:hover:text-[#dceee3] transition-colors">
               <Bell size={20} />
               <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-gold" />
             </button>

@@ -46,5 +46,5 @@ export default async function ShopPage() {
     });
   }
 
-  return <ShopClient products={products} initialFavorites={initialFavorites} />;
+  return <ShopClient products={products} initialFavorites={initialFavorites} isAuthenticated={!!user} />;
 }

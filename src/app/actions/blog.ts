@@ -3,7 +3,6 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { uploadToCloudinary } from "@/lib/cloudinary";
 
 export async function createBlogPost(formData: FormData) {
   const supabase = await createClient();
@@ -14,19 +13,9 @@ export async function createBlogPost(formData: FormData) {
   const category = (formData.get("category") as string)?.trim();
   const excerpt = (formData.get("excerpt") as string)?.trim() || null;
   const content = (formData.get("content") as string)?.trim();
-  const imageFile = formData.get("image") as File | null;
+  const image_url = (formData.get("image_url") as string)?.trim() || null;
 
   if (!title || !category || !content) return { error: "Title, category, and content are required." };
-
-  let image_url: string | null = null;
-
-  if (imageFile && imageFile.size > 0) {
-    try {
-      image_url = await uploadToCloudinary(imageFile, "symbodied/blogs");
-    } catch {
-      // non-fatal — blog saved without image
-    }
-  }
 
   const { error } = await supabase.from("blogs").insert({
     user_id: user.id,

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Logo } from "./logo";
-import { Button } from "@/components/ui/button";
 import { footerCols } from "@/lib/data";
+import { SubscribeForm } from "./subscribe-form";
 
 export function Footer() {
   return (
@@ -14,14 +14,7 @@ export function Footer() {
               A living symbol of tradition, heritage and collective identity — empowering communities through commerce, culture, and solidarity.
             </p>
             {/* Newsletter */}
-            <div className="mt-6 flex gap-2">
-              <input
-                type="email"
-                placeholder="Your email"
-                className="flex-1 h-11 px-4 rounded-lg border border-white/15 bg-white/6 text-white text-sm font-sans placeholder:text-white/40 focus:outline-none focus:border-brand"
-              />
-              <Button variant="gold" size="md">Subscribe</Button>
-            </div>
+            <SubscribeForm />
           </div>
 
           {footerCols.map((col) => (
