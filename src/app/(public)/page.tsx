@@ -31,17 +31,17 @@ export default function HomePage() {
   return (
     <div>
       {/* ── HERO ── */}
-      <section className="bg-gradient-to-b from-[#F7FAF8] to-white border-b border-ink-200">
+      <section className="bg-gradient-to-b from-[#F7FAF8] to-white dark:from-[#112618] dark:to-[#0f1611] border-b border-ink-200 dark:border-[#263a2b]">
         <div className="max-w-[var(--container-max)] mx-auto px-6 py-20 md:py-28">
           <div className="grid md:grid-cols-[1.05fr_1fr] gap-14 items-center">
             <div>
               <Badge tone="brand" leadingIcon={<Leaf size={13} />} className="mb-5">
                 Rooted in the Igbo Dibia tradition
               </Badge>
-              <h1 className="font-display font-bold text-[clamp(2.25rem,5vw,3.75rem)] leading-[1.04] tracking-tight text-ink">
+              <h1 className="font-display font-bold text-[clamp(2.25rem,5vw,3.75rem)] leading-[1.04] tracking-tight text-ink dark:text-[#dceee3]">
                 Reviving Indigenous Traditions for Collective Economic Growth
               </h1>
-              <p className="mt-5 text-lg text-ink-600 leading-relaxed max-w-[520px] font-sans">
+              <p className="mt-5 text-lg text-ink-600 dark:text-[#89a895] leading-relaxed max-w-[520px] font-sans">
                 A living symbol of tradition, heritage and collective identity — empowering communities through commerce, culture, and solidarity.
               </p>
               <div className="mt-7 flex flex-wrap gap-3">
@@ -69,19 +69,19 @@ export default function HomePage() {
       </section>
 
       {/* ── STATS BAR ── */}
-      <div className="bg-white border-b border-ink-200">
+      <div className="bg-white dark:bg-[#0f1611] border-b border-ink-200 dark:border-[#263a2b]">
         <div className="max-w-[var(--container-max)] mx-auto px-6 py-9 grid grid-cols-2 md:grid-cols-4 gap-6">
           {stats.map((s) => (
             <div key={s.label} className="text-center">
               <div className="font-display font-bold text-4xl text-brand leading-none">{s.value}</div>
-              <div className="mt-1.5 text-sm text-ink-500 font-sans">{s.label}</div>
+              <div className="mt-1.5 text-sm text-ink-500 dark:text-[#668074] font-sans">{s.label}</div>
             </div>
           ))}
         </div>
       </div>
 
       {/* ── ABOUT ── */}
-      <section className="py-20 md:py-28 bg-white">
+      <section className="py-20 md:py-28 bg-white dark:bg-[#0f1611]">
         <div className="max-w-[var(--container-max)] mx-auto px-6 grid md:grid-cols-2 gap-14 items-center">
           <div>
             <SectionHeader
@@ -89,7 +89,7 @@ export default function HomePage() {
               title="A marketplace rooted in heritage"
               subtext="Symbodied takes its name and spirit from the Dibia tradition — keepers of knowledge, medicine, and community. We bring that ethos to commerce."
             />
-            <blockquote className="mt-7 pl-5 border-l-[3px] border-brand font-display font-semibold text-xl text-ink leading-relaxed">
+            <blockquote className="mt-7 pl-5 border-l-[3px] border-brand font-display font-semibold text-xl text-ink dark:text-[#dceee3] leading-relaxed">
               "When tradition and trade move together, whole communities rise."
             </blockquote>
             <div className="mt-6">
@@ -111,7 +111,7 @@ export default function HomePage() {
       </section>
 
       {/* ── PROGRAMS ── */}
-      <section className="py-20 md:py-28 bg-ink-100">
+      <section className="py-20 md:py-28 bg-ink-100 dark:bg-[#112618]">
         <div className="max-w-[var(--container-max)] mx-auto px-6">
           <SectionHeader
             align="center"
@@ -123,14 +123,14 @@ export default function HomePage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {programs.map((p) => (
               <Card key={p.name} hoverable padding="lg" style={{ borderLeft: "3px solid var(--brand-primary)" }}>
-                <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-brand-light text-brand">
+                <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-brand-light dark:bg-[#1b2d20] text-brand dark:text-[#2E9B5A]">
                   {PROGRAM_ICONS[p.icon]}
                 </span>
-                <h3 className="mt-4 mb-2 font-sans font-bold text-lg text-ink">{p.name}</h3>
-                <p className="text-sm text-ink-600 font-sans leading-relaxed">{p.desc}</p>
+                <h3 className="mt-4 mb-2 font-sans font-bold text-lg text-ink dark:text-[#dceee3]">{p.name}</h3>
+                <p className="text-sm text-ink-600 dark:text-[#89a895] font-sans leading-relaxed">{p.desc}</p>
                 <Link
                   href={`/programs/${p.slug}`}
-                  className="mt-3.5 inline-flex items-center gap-1 text-sm font-semibold text-brand hover:text-brand-hover transition-colors font-sans"
+                  className="mt-3.5 inline-flex items-center gap-1 text-sm font-semibold text-brand dark:text-[#2E9B5A] hover:text-brand-hover transition-colors font-sans"
                 >
                   Explore <ArrowRight size={14} />
                 </Link>
@@ -141,7 +141,7 @@ export default function HomePage() {
       </section>
 
       {/* ── FEATURED PRODUCTS ── */}
-      <section className="py-20 md:py-28 bg-white">
+      <section className="py-20 md:py-28 bg-white dark:bg-[#0f1611]">
         <div className="max-w-[var(--container-max)] mx-auto px-6">
           <SectionHeader
             overline="From Our Marketplace"
@@ -162,7 +162,7 @@ export default function HomePage() {
       </section>
 
       {/* ── BLOG ── */}
-      <section className="py-20 md:py-28 bg-brand-light">
+      <section className="py-20 md:py-28 bg-brand-light dark:bg-[#112618]">
         <div className="max-w-[var(--container-max)] mx-auto px-6">
           <SectionHeader
             overline="Articles & Insights"
@@ -183,7 +183,7 @@ export default function HomePage() {
       </section>
 
       {/* ── PROJECTS (dark strip) ── */}
-      <section className="py-20 md:py-28 bg-ink">
+      <section className="py-20 md:py-28 bg-ink dark:bg-[#1b2d20]">
         <div className="max-w-[var(--container-max)] mx-auto px-6">
           <SectionHeader
             overline="Crowdfunding"
@@ -200,7 +200,7 @@ export default function HomePage() {
       </section>
 
       {/* ── EVENTS ── */}
-      <section className="py-20 md:py-28 bg-white">
+      <section className="py-20 md:py-28 bg-white dark:bg-[#0f1611]">
         <div className="max-w-[var(--container-max)] mx-auto px-6">
           <SectionHeader
             overline="What's on"
@@ -240,7 +240,7 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-        <div className="relative min-h-[420px] bg-white">
+        <div className="relative min-h-[420px] bg-white dark:bg-[#162018]">
           <Image
             src="/images/static/international_security.png"
             alt="International solidarity"

@@ -28,7 +28,7 @@ interface ProductCardProps {
 
 export function ProductCard({ id, name, slug, category, vendor, price, unit, location, seed = 0, image, isFavorited = false, onAddToCart, onToggleFavorite, className }: ProductCardProps) {
   return (
-    <div className={cn("group bg-white rounded-xl border border-ink-200 shadow-[var(--shadow-sm)] overflow-hidden transition-all duration-200 hover:shadow-[var(--shadow-lg)] hover:-translate-y-0.5", className)}>
+    <div className={cn("group bg-white dark:bg-[#162018] rounded-xl border border-ink-200 dark:border-[#263a2b] shadow-[var(--shadow-sm)] overflow-hidden transition-all duration-200 hover:shadow-[var(--shadow-lg)] hover:-translate-y-0.5", className)}>
       <div className="relative aspect-[4/3] overflow-hidden">
         {image ? (
           <Image
@@ -60,18 +60,18 @@ export function ProductCard({ id, name, slug, category, vendor, price, unit, loc
       <div className="p-4 flex flex-col gap-2">
         <Badge tone="brand" size="sm" className="self-start">{category}</Badge>
         {slug ? (
-          <Link href={`/shop/${slug}`} className="font-sans font-semibold text-sm text-ink leading-snug line-clamp-1 hover:text-brand transition-colors duration-200">
+          <Link href={`/shop/${slug}`} className="font-sans font-semibold text-sm text-ink dark:text-[#dceee3] leading-snug line-clamp-1 hover:text-brand dark:hover:text-[#2E9B5A] transition-colors duration-200">
             {name}
           </Link>
         ) : (
-          <h3 className="font-sans font-semibold text-sm text-ink leading-snug line-clamp-1">{name}</h3>
+          <h3 className="font-sans font-semibold text-sm text-ink dark:text-[#dceee3] leading-snug line-clamp-1">{name}</h3>
         )}
-        <p className="text-xs text-ink-500 font-sans">{vendor}</p>
+        <p className="text-xs text-ink-500 dark:text-[#668074] font-sans">{vendor}</p>
         <div className="flex items-baseline justify-between mt-1">
           <span className="font-display font-bold text-lg text-brand">{naira(price)}</span>
-          <span className="text-xs text-ink-500 font-sans">/ {unit}</span>
+          <span className="text-xs text-ink-500 dark:text-[#668074] font-sans">/ {unit}</span>
         </div>
-        <div className="flex items-center gap-1 text-xs text-ink-500 font-sans">
+        <div className="flex items-center gap-1 text-xs text-ink-500 dark:text-[#668074] font-sans">
           <MapPin size={11} />
           {location}
         </div>

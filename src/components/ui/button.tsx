@@ -17,7 +17,7 @@ const variantStyles: Record<Variant, string> = {
   primary:
     "bg-brand text-white hover:bg-brand-hover active:bg-brand-deep border-transparent",
   secondary:
-    "bg-transparent text-brand border-brand hover:bg-brand-light dark:hover:bg-[#112618] active:bg-brand-light",
+    "bg-transparent text-brand dark:text-[#2E9B5A] border-brand dark:border-[#2E9B5A] hover:bg-brand-light dark:hover:bg-[#112618] active:bg-brand-light",
   gold:
     "bg-gold text-ink border-gold hover:bg-gold-mid active:bg-gold-dark",
   ghost:
@@ -55,7 +55,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         className={cn(
           "inline-flex items-center justify-center rounded-lg border font-sans font-semibold",
           "transition-all duration-200 ease-standard focus-visible:outline-none",
-          "focus-visible:ring-2 focus-visible:ring-brand-hover focus-visible:ring-offset-2",
+          "focus-visible:ring-2 focus-visible:ring-brand-hover focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#0f1611]",
           "disabled:opacity-50 disabled:cursor-not-allowed",
           "select-none cursor-pointer",
           variantStyles[variant],
