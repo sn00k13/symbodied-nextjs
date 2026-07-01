@@ -48,7 +48,7 @@ export default async function ProjectsPage() {
         </div>
       </section>
 
-      <ProjectsClient projects={projects} />
+      <ProjectsClient projects={projects} isLive={liveProjects.length > 0} />
 
       <section className="py-16 bg-brand">
         <div className="max-w-[var(--container-max)] mx-auto px-6 text-center">

@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
 
-const NAV = [
+const NAV: { label: string; href: string; external?: boolean }[] = [
   { label: "Home", href: "/" },
   { label: "Shop", href: "/shop" },
   { label: "Programs", href: "/programs" },
